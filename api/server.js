@@ -6,7 +6,10 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = ['https://dog-broad.github.io/'];
+const allowedOrigins = [
+  'https://dog-broad.github.io',
+  /https:\/\/.*\.dog-broad\.github\.io$/ // Allow all subdomains
+];
 
 app.use(cors({
   origin: function(origin, callback){
