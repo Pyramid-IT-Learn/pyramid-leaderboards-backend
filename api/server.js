@@ -8,14 +8,18 @@ const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
   'https://dog-broad.github.io',
-  /https:\/\/.*\.dog-broad\.github\.io$/ // Allow all subdomains
+  /https:\/\/.*\.dog-broad\.github\.io$/
 ];
 
 app.use(cors({
-  origin: function(origin, callback){
+  origin: function(origin, callback) {
     if (!origin) return callback(null, true); // Allow requests with no origin (like mobile apps or curl requests)
     
-    if (allowedOrigins.indexOf(origin) === -1) {
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      return typeof allowedOrigin === 'string' ? origin === allowedOrigin : allowedOrigin.test(origin);
+    });
+
+    if (!isAllowed) {
       const message = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(message), false);
     }
