@@ -6,26 +6,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  'https://dog-broad.github.io',
-  /https:\/\/.*\.dog-broad\.github\.io$/
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // Allow requests with no origin (like mobile apps or curl requests)
-    
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      return typeof allowedOrigin === 'string' ? origin === allowedOrigin : allowedOrigin.test(origin);
-    });
-
-    if (!isAllowed) {
-      const message = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(message), false);
-    }
-    return callback(null, true);
-  }
-}));
+app.use(cors());
 
 app.use(express.json());
 
