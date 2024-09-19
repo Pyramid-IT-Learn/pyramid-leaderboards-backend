@@ -86,6 +86,7 @@ app.get('/databases/:db/collections/:collection/data', async (req, res) => {
     res.status(500).send('Error fetching data');
   }
 });
+
 // Endpoint to fetch the last update time of documents in a specific collection in a specific database
 app.get('/databases/:db/collections/:collection/batch-update-time', async (req, res) => {
   try {
@@ -106,6 +107,41 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
 
     const latestObjectId = latestDocument[0]._id;
     const timestamp = latestObjectId.getTimestamp();
+    
+    res.json({ lastUpdateTime: timestamp });
+    console.log(`Sent last update time for ${collectionName} in database ${dbName}: ${timestamp}`);
+  } catch (error) {
+    console.error(`Error fetching last update time from ${collectionName} in database ${dbName}:`, error);
+    res.status(500).send('Error fetching last update time');
+  }
+});
+
+// Endpoint to fetch the last update time of documents in a specific collection in a specific database
+app.get('/databases/:db/collections/:collection/batch-update-time-oplog', async (req, res) => {
+  try {
+    const dbName = req.params.db;
+    const collectionName = req.params.collection;
+    console.log('-------------------');
+    console.log(`GET /databases/${dbName}/collections/${collectionName}/batch-update-time-oplog`);
+    console.log('-------------------');
+
+    await connectClient();
+    const db = client.db(dbName);
+    
+    // Access the oplog
+    const oplog = client.db('local').collection('oplog.rs');
+    
+    // Find the last update for the specified collection
+    const latestUpdate = await oplog.find({
+      ns: `${dbName}.${collectionName}`,
+      op: { $in: ['i', 'u'] } // 'i' for insert, 'u' for update
+    }).sort({ ts: -1 }).limit(1).toArray();
+
+    if (latestUpdate.length === 0) {
+      return res.status(404).send('No updates found in this collection');
+    }
+
+    const timestamp = latestUpdate[0].ts.getTimestamp();
     
     res.json({ lastUpdateTime: timestamp });
     console.log(`Sent last update time for ${collectionName} in database ${dbName}: ${timestamp}`);
