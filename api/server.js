@@ -117,9 +117,9 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
 });
 
 app.get('/databases/:db/collections/:collection/batch-update-time-oplog', async (req, res) => {
+  const dbName = req.params.db;
+  const collectionName = req.params.collection;
   try {
-    const dbName = req.params.db;
-    const collectionName = req.params.collection;
     console.log('-------------------');
     console.log(`GET /databases/${dbName}/collections/${collectionName}/batch-update-time-oplog`);
     console.log('-------------------');
