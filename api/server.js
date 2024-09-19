@@ -116,7 +116,6 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
   }
 });
 
-// Endpoint to fetch the last update time of documents in a specific collection in a specific database
 app.get('/databases/:db/collections/:collection/batch-update-time-oplog', async (req, res) => {
   try {
     const dbName = req.params.db;
