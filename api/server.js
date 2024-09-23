@@ -105,8 +105,32 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
       return res.status(404).send('No documents found in this collection');
     }
 
-    const latestObjectId = latestDocument[0]._id;
-    const timestamp = latestObjectId.getTimestamp();
+    // Check updatedAt field
+    if (!latestDocument[0] || !latestDocument[0].updatedAt) {
+      console.error(`No documents found in ${collectionName} in database ${dbName}`);
+      res.status(404).send('No documents found');
+      return;
+    }
+
+    // Extract timestamp from updatedAt field
+    const updatedAt = latestDocument[0].updatedAt;
+
+    // Check if updatedAt is a Date object
+    if (!(updatedAt instanceof Date)) {
+      console.error(`Invalid updatedAt field in ${collectionName} in database ${dbName}`);
+      res.status(500).send('Invalid updatedAt field');
+      return;
+    }
+
+    // Convert updatedAt to timestamp
+    const timestamp = updatedAt.getTime();
+
+    // Check if timestamp is a number 
+    if (isNaN(timestamp)) {
+      console.error(`Invalid timestamp in ${collectionName} in database ${dbName}`);
+      res.status(500).send('Invalid timestamp');
+      return;
+    }
     
     res.json({ lastUpdateTime: timestamp });
     console.log(`Sent last update time for ${collectionName} in database ${dbName}: ${timestamp}`);
