@@ -125,6 +125,9 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
     // Convert updatedAt to timestamp
     const timestamp = updatedAt.getTime();
 
+    // Fetched date is IST converted to UTC
+    const utcTimestamp = timestamp - (5 * 60 * 60 * 1000);
+
     // Check if timestamp is a number 
     if (isNaN(timestamp)) {
       console.error(`Invalid timestamp in ${collectionName} in database ${dbName}`);
