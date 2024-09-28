@@ -128,8 +128,6 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
     // Fetched date is IST converted to UTC
     const utcTimestamp = timestamp - (5 * 60 * 60 * 1000);
 
-    timestamp = utcTimestamp;
-
     // Check if timestamp is a number 
     if (isNaN(timestamp)) {
       console.error(`Invalid timestamp in ${collectionName} in database ${dbName}`);
@@ -137,7 +135,7 @@ app.get('/databases/:db/collections/:collection/batch-update-time', async (req, 
       return;
     }
     
-    res.json({ lastUpdateTime: timestamp });
+    res.json({ lastUpdateTime: utcTimestamp });
     console.log(`Sent last update time for ${collectionName} in database ${dbName}: ${timestamp}`);
   } catch (error) {
     console.error(`Error fetching last update time from ${collectionName} in database ${dbName}:`, error);
